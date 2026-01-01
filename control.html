@@ -35,7 +35,7 @@
         
         // 1. Buscamos el parámetro ?ip= en la URL
         const urlParams = new URLSearchParams(window.location.search);
-        const IP_TV = urlParams.get('ip') || "127.0.0.1"; // Si no hay IP, usa localhost por defecto
+        const IP_TV = urlParams.get('ip') || "192.168.100.2"; // Si no hay IP, usa localhost por defecto
         
         // Mostrar al usuario a qué IP nos conectamos
         document.getElementById('ip-display').innerText = "Conectando a: " + IP_TV;
@@ -64,4 +64,5 @@
         }
     </script>
 </body>
+
 </html>
