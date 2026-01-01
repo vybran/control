@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joystick Remoto</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #222; color: white; touch-action: manipulation; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        button { width: 80px; height: 80px; font-size: 30px; border: none; border-radius: 10px; background: #444; color: white; active: background: #666; }
+        .up { grid-column: 2; }
+        .left { grid-column: 1; }
+        .right { grid-column: 3; }
+        .down { grid-column: 2; }
+        #info { margin-bottom: 20px; text-align: center; }
+        .status { font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="info">
+        <div id="status" class="status" style="color: orange;">Conectando...</div>
+        <small id="ip-display"></small>
+    </div>
+
+    <div class="grid">
+        <button class="up" onclick="send('up')">⬆</button>
+        <button class="left" onclick="send('left')">⬅</button>
+        <button class="right" onclick="send('right')">➡</button>
+        <button class="down" onclick="send('down')">⬇</button>
+    </div>
+
+    <script>
+        // --- AQUÍ VA LA LÓGICA DE SINCRONIZACIÓN ---
+        
+        // 1. Buscamos el parámetro ?ip= en la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const IP_TV = urlParams.get('ip') || "127.0.0.1"; // Si no hay IP, usa localhost por defecto
+        
+        // Mostrar al usuario a qué IP nos conectamos
+        document.getElementById('ip-display').innerText = "Conectando a: " + IP_TV;
+
+        // 2. Creamos la conexión WebSocket usando esa IP
+        const socket = new WebSocket("ws://" + IP_TV + ":8080");
+
+        socket.onopen = () => {
+            document.getElementById('status').innerText = "✅ CONECTADO";
+            document.getElementById('status').style.color = "lightgreen";
+        };
+
+        socket.onclose = () => {
+            document.getElementById('status').innerText = "❌ DESCONECTADO";
+            document.getElementById('status').style.color = "red";
+        };
+
+        socket.onerror = () => {
+            document.getElementById('status').innerText = "⚠️ ERROR DE CONEXIÓN";
+        };
+
+        function send(msg) {
+            if(socket.readyState === WebSocket.OPEN) {
+                socket.send(msg);
+            }
+        }
+    </script>
+</body>
+</html>
